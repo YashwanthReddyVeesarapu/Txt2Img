@@ -13,6 +13,11 @@ import os
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:3000",
+    "https://cloud.redsols.us"
+]
+
 # cors
 app.add_middleware(
     CORSMiddleware,
@@ -52,4 +57,4 @@ if __name__ == "__main__":
     if os.getenv("ENVIRONMENT") == "development":
         uvicorn.run("main:app", host="127.0.0.1", port=8000)
     else:
-        uvicorn.run("main:app", host="0.0.0.0", port=443)
+        uvicorn.run("main:app", host="0.0.0.0", port=80)
