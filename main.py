@@ -4,14 +4,12 @@ import base64
 
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
-
-import random
 
 
 import os
-import io
+
 
 app = FastAPI()
 
@@ -45,22 +43,13 @@ async def generate(request: Request):
     # PIL image
     image = pipe(prompt=prompt, num_inference_steps=1, guidance_scale=0.0).images[0]
 
-    with io.BytesIO() as buffer:
-        image.save(buffer, format="PNG")
-        output_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    # convert to base64
+    image_bytes = image.tobytes()
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
-    # unique_filename = str(random.randint(0, 1000000000)) + ".png"
+    response_base64 = "data:image/png;base64," + image_base64
 
-    # image.save(unique_filename)
-
-    # output_base64 = None
-
-    # with open(unique_filename, "rb") as buffer:
-    #     output_base64 = base64.b64encode(buffer.read()).decode('utf-8')
-
-
-    return JSONResponse(output_base64)
-
+    return Response(content=response_base64, media_type="text/plain")
 
 if __name__ == "__main__":
     import uvicorn
